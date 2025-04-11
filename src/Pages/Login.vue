@@ -1,51 +1,103 @@
 <template>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <h2>BIENVENIDO</h2>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h2>{{ isRegistering ? 'REGISTRARSE' : 'BIENVENIDO' }}</h2>
+      </div>
+
+      <div class="login-body">
+        <form class="login-form" @submit.prevent="handleSubmit">
+          <!-- Registro: Nombre de Usuario -->
+          <div v-if="isRegistering" class="form-group">
+            <label for="username">Nombre de Usuario</label>
+            <div class="input-group">
+              <input type="text" id="username" class="form-control" v-model="form.username" />
             </div>
+          </div>
 
-            <div class="login-body">
-                <form class="login-form">
-                    <div class="form-group">
-                        <label for="email">Correo Electrónico</label>
-                        <div class="input-group">
-                            <input type="email" id="email" class="form-control" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Contraseña</label>
-                        <div class="input-group">
-                            <input :type="showPassword ? 'text' : 'password'" id="password" class="form-control" />
-                            <span class="toggle-password" @click="showPassword = !showPassword">
-                                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                    <line x1="1" y1="1" x2="23" y2="23"></line>
-                                </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="login-btn">Iniciar Sesión</button>
-
-                    <div class="auth-options">
-                        <a href="#" class="auth-link">Crear cuenta</a>
-                    </div>
-                </form>
+          <!-- Correo Electrónico -->
+          <div class="form-group">
+            <label for="email">Correo Electrónico</label>
+            <div class="input-group">
+              <input type="email" id="email" class="form-control" v-model="form.email" />
             </div>
-        </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <div class="input-group">
+              <input :type="showPassword ? 'text' : 'password'" id="password" class="form-control" v-model="form.password" />
+              <span class="toggle-password" @click="showPassword = !showPassword">
+                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                  </path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Confirmar contraseña solo en registro -->
+          <div v-if="isRegistering" class="form-group">
+            <label for="confirmPassword">Confirmar Contraseña</label>
+            <div class="input-group">
+              <input :type="showPassword ? 'text' : 'password'" id="confirmPassword" class="form-control" v-model="form.confirmPassword" />
+            </div>
+          </div>
+
+          <!-- Botón -->
+          <button type="submit" class="login-btn">
+            {{ isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión' }}
+          </button>
+
+          <!-- Cambiar entre login y registro -->
+          <div class="auth-options">
+            <a href="#" class="auth-link" @click.prevent="isRegistering = !isRegistering">
+              {{ isRegistering ? '¿Ya tienes una cuenta?' : 'Crear cuenta' }}
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 
 const showPassword = ref(false)
+const isRegistering = ref(false)
+
+const form = ref({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+
+const handleSubmit = () => {
+  if (isRegistering.value) {
+    if (form.value.password !== form.value.confirmPassword) {
+      alert('Las contraseñas no coinciden')
+      return
+    }
+    // Aquí podrías enviar los datos al backend
+    alert(`Registrado: ${form.value.username} (${form.value.email})`)
+  } else {
+    // Iniciar sesión
+    alert(`Iniciando sesión con ${form.value.email}`)
+  }
+}
 </script>
 
 <style scoped>
@@ -112,8 +164,10 @@ const showPassword = ref(false)
     position: relative;
     display: flex;
     align-items: center;
-    border-radius: 8px; /* Mantiene el borde redondeado */
-    overflow: hidden; /* Evita que el input sobresalga */
+    border-radius: 8px;
+    /* Mantiene el borde redondeado */
+    overflow: hidden;
+    /* Evita que el input sobresalga */
     border: 1px solid #e2e8f0;
     background: white;
 }
@@ -122,7 +176,8 @@ const showPassword = ref(false)
     width: 100%;
     padding: 12px 40px 12px 16px;
     border: none;
-    border-radius: 8px; /* Borde redondeado completo */
+    border-radius: 8px;
+    /* Borde redondeado completo */
     font-size: 0.9375rem;
     background-color: #f8fafc;
     appearance: none;
